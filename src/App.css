@@ -12,8 +12,10 @@ body,
 }
 /* sets canvas window */
 .canvas-container {
-    width: 800px;
-    height: 1200px;
+    /* width: 800px;
+    height: 1200px; */
+    width: 400px;
+    height: 600px;
     margin: auto;
     position: relative;
     border: 5px solid black; /* Add a border */

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState,forwardRef } from 'react'
+import React, { useEffect, useRef, useState, forwardRef } from 'react'
 import { useFrame } from "react-three-fiber";
 
 
@@ -28,12 +28,18 @@ const Player = forwardRef(({ updateJumpFunction }, ref) => {
 
     const jump = () => {
         // console.log("Player jumped!");
+        // set last jump ehight
+        pRef.current.lastJumpHeight = Math.max(pRef.current.position.y, pRef.current.lastJumpHeight)
         setPvy(JUMP_VELOCITY * 0.02)
     };
 
     // on render pass the jumpo function to the parent
     useEffect(() => {
         updateJumpFunction(jump); // Pass the jump function to the parent
+
+        //set minimum
+        pRef.current.lastJumpHeight = -6 // starting positon set 
+
     }, []);
 
     //exposing ref externally to parent
@@ -71,12 +77,12 @@ const Player = forwardRef(({ updateJumpFunction }, ref) => {
 
 
 
-     
+
 
         // apply gravity to velocity gravity
         setPvy((prev) => prev + GRAVITY * delta * 0.02)
 
-     
+
 
         //Jump condition (collision later)
         if (pRef.current.position.y < -7) {
@@ -88,14 +94,14 @@ const Player = forwardRef(({ updateJumpFunction }, ref) => {
         pRef.current.position.x = Math.max(-5 + PLAYER_WIDTH / 2, Math.min(pRef.current.position.x + pvx, 5 - PLAYER_WIDTH / 2))
         pRef.current.position.y += pvy
         pRef.current.pvy = pvy
- 
+
     })
 
     return (
         <>
             <mesh
                 ref={pRef}
-                position={[0, 0, 0]}
+                position={[0, -5, 0]}
                 scale={[0.5, 0.5, 0.5]}
             >
                 <capsuleGeometry args={[PLAYER_WIDTH, 1, 4, 8]} />

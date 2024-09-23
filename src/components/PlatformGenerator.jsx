@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React, { useRef,useState } from 'react'
 import * as THREE from 'three'
 import { useFrame } from "react-three-fiber";
 
@@ -6,7 +6,7 @@ const PlatformGenerator = ({ gameW, gameH, platformNumber, playerRef, playerJump
     let platforms = []
     for (let i = 0; i < platformNumber; i++) {
         let rx = (Math.random() - 0.5) * 4
-        let ry = (Math.random() - .5) * 4
+        let ry = (Math.random() - .5) * 200
         let platPosition = [rx, ry, 0]
 
         platforms.push(platPosition)
@@ -37,6 +37,8 @@ const Platform = ({ gameW, gameH, position, playerRef, playerJump }) => {
     const platformRef = useRef()
     const platformBoundingBox = useRef(new THREE.Box3())
 
+    const [targetY, setTargetY] = useState(null)
+
 
     //these are now in game measurments where the camera/game width is 10 units
     let platformW = 10 * (8 / 35) //gameW / gameH * 0.5
@@ -44,7 +46,7 @@ const Platform = ({ gameW, gameH, position, playerRef, playerJump }) => {
 
 
 
-    useFrame((stats, delta) => {
+    useFrame((state, delta) => {
 
 
         // if platform and player exist then -->
@@ -54,16 +56,40 @@ const Platform = ({ gameW, gameH, position, playerRef, playerJump }) => {
 
             const playerBoundingBox = new THREE.Box3().setFromObject(playerRef.current)
 
-  
+
             // Check colision
             if (playerBoundingBox.intersectsBox(platformBoundingBox.current)) {
                 // pass this logic back to player component to handle jump
-                if(playerRef.current.pvy<0){
+                if (playerRef.current.pvy < 0) {
+
+
+                    //update camera position based on jump
+                    if (playerRef.current.position.y > playerRef.current.lastJumpHeight) {
+                        // console.log('cam increment: ',(playerRef.current.position.y - playerRef.current.lastJumpHeight))
+                        // state.camera.position.y += (playerRef.current.position.y - playerRef.current.lastJumpHeight)
+                        setTargetY(state.camera.position.y + (playerRef.current.position.y - playerRef.current.lastJumpHeight))
+
+                    }
+
                     playerJump();
+
+
+
                 }
-                
+
 
             }
+            // if new targeY camera pos exists lerp to new pos
+            if (targetY !== null) {
+                state.camera.position.y = THREE.MathUtils.lerp(state.camera.position.y, targetY, 0.1)
+
+                // If the camera is close enough to the target, stop lerping
+                if (Math.abs(state.camera.position.y - targetY) < 0.01) {
+                    setTargetY(null); // Clear the target once reached
+                }
+
+            }
+
 
         }
 

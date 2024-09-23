@@ -8,7 +8,7 @@ const Camera = ({ maxHeight }) => {
     const handleKeydown = (event) => {
         if (event.key == " ") {
 
-            setCamH((prev) => prev + 0.5)
+            setCamH((prev) => prev + 1.0)
 
 
         }

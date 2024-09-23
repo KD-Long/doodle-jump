@@ -40,7 +40,7 @@ const Experience = () => {
         <PlatformGenerator
             gameW={1200}
             gameH={800}
-            platformNumber={10}
+            platformNumber={100}
             playerRef={playerRef}
             playerJump={playerJump}
         />
